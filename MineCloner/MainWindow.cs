@@ -10,6 +10,7 @@ using System.IO;
 using System.Windows.Forms;
 using System.Text.RegularExpressions;
 using System.Collections;
+using System.Xml.Serialization;
 
 // I might have gone overboard with how small my methods got.
 
@@ -21,7 +22,7 @@ namespace MineCloner
 	{
 		// Configured These two fields so that they control the number of columns and rows.
 		// All columns and rows are of equal size
-		private readonly string configFilePath = "MineClonerConfig.txt";
+		private readonly string configFilePath = "MineClonerConfig.xml";
 		private int tableColumnCount = 15;
 		private int tableRowCount = 15;
 		private int mineCount = 1;
@@ -50,7 +51,13 @@ namespace MineCloner
 
 		public MainWindow()
 		{
-			if (!File.Exists(configFilePath)) { File.Create(configFilePath).Close(); }
+			if (!File.Exists(configFilePath))
+            {
+                Config config = new Config(tableColumnCount, tableRowCount, mineCount);
+                XmlSerializer xs = new XmlSerializer(typeof(Config));
+                using (Stream s = File.Create(configFilePath))
+                    xs.Serialize(s, config);
+            }
 			Initalize();
 			ResizeFonts(this, new EventArgs());
 			this.ResizeEnd += ResizeFonts;
@@ -58,16 +65,15 @@ namespace MineCloner
 
 		private void Initalize()
 		{
-			// Initalize game variables
-			StreamReader reader = new StreamReader(configFilePath);
-			string fileContents = reader.ReadToEnd();
-			reader.Close();
-			IEnumerator numbers =
-				Regex.Matches(fileContents, @"(?<==\s*)\d+").GetEnumerator();
+            // Initalize game variables
+            Config config;
+            XmlSerializer xs = new XmlSerializer(typeof(Config));
+            using (Stream s = File.OpenRead(configFilePath))
+                config = (Config)xs.Deserialize(s);
 
-			tableColumnCount = numbers.MoveNext() ? Math.Max( int.Parse(((Match) numbers.Current).Value), tableColumnCount)  : tableColumnCount ;
-			tableRowCount = numbers.MoveNext() ? Math.Max(int.Parse(((Match) numbers.Current).Value), tableRowCount) : tableRowCount;
-			mineCount = numbers.MoveNext() ? Math.Max(int.Parse(((Match) numbers.Current).Value), mineCount) : mineCount;
+            tableColumnCount = config.TableColumnCount;
+			tableRowCount = config.TableRowCount;
+			mineCount = config.MineCount;
 
 			//System.Diagnostics.Process.Start("Config.txt");
 			InitializeComponent();

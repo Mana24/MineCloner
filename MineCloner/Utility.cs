@@ -10,7 +10,7 @@ namespace MineCloner
 {
 	static class Utility
 	{
-		public static readonly Dictionary<EightDirections, (int x, int y)> EightDirectionsInNumbers =
+		public static readonly IReadOnlyDictionary<EightDirections, (int x, int y)> EightDirectionsInNumbers =
 			new Dictionary<EightDirections, (int x, int y)>()
 			{
 				{ EightDirections.North, (0, 1) }, // North
