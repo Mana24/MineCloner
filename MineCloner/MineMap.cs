@@ -21,8 +21,9 @@ namespace MineCloner
 	class MineMap
 	{
 		protected BitArray[] mapArray { get; set; }
-		protected int tableColumns { get; }
-		protected int tableRows { get; }
+		public int TableColumns { get; }
+		public int TableRows { get; }
+		public int MineCount { get;  }
 
 		public MineMap(int tableColumns, int tableRows, int mineCount) : this(tableColumns, tableRows)
 		{
@@ -32,20 +33,27 @@ namespace MineCloner
 				throw new MinesMoreThanSlotsException();
 			}
 
-			GenerateMines(mineCount);
+			this.MineCount = mineCount;
+
+			GenerateMines();
 		}
 
 		protected MineMap(int tableColumns, int tableRows)
 		{
-			mapArray = new BitArray[tableColumns];
+			this.TableColumns = tableColumns;
+			this.TableRows = tableRows;
+
+			InitializeClearBitArray();
+		}
+
+		protected void InitializeClearBitArray()
+        {
+			mapArray = new BitArray[TableColumns];
 
 			for (int i = 0; i < mapArray.Length; i++)
 			{
-				mapArray[i] = new BitArray(tableRows, false);
+				mapArray[i] = new BitArray(TableRows, false);
 			}
-
-			this.tableColumns = tableColumns;
-			this.tableRows = tableRows;
 		}
 
 		public bool this[int x, int y]
@@ -61,15 +69,15 @@ namespace MineCloner
 			}
 		}
 
-		protected virtual void GenerateMines(int mineCount)
+		protected virtual void GenerateMines()
 		{
 			Random random = new Random();
 
 			int i = 0;
-			while (i < mineCount)
+			while (i < MineCount)
 			{
-				int mineColumn = random.Next(1, this.tableColumns - 1);
-				int mineRow = random.Next(1, this.tableRows - 1);
+				int mineColumn = random.Next(1, this.TableColumns - 1);
+				int mineRow = random.Next(1, this.TableRows - 1);
 
 				if (this[mineColumn, mineRow] == true)
 				{
@@ -84,11 +92,17 @@ namespace MineCloner
 			}
 		}
 
+		public void ReGenerateMines()
+        {
+			InitializeClearBitArray();
+			GenerateMines();
+        }
+
 		public void Debug()
 		{
-			for (int x = 0; x < tableColumns; x++)
+			for (int x = 0; x < TableColumns; x++)
 			{
-				for (int y = 0; y < tableRows; y++)
+				for (int y = 0; y < TableRows; y++)
 				{
 					switch (this[x, y])
 					{

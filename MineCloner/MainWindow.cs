@@ -23,6 +23,8 @@ namespace MineCloner
 		// Configured These two fields so that they control the number of columns and rows.
 		// All columns and rows are of equal size
 		private readonly string configFilePath = "MineClonerConfig.xml";
+		private bool playerWon = false;
+		private bool isFirstClick = true;
 		private int tableColumnCount = 15;
 		private int tableRowCount = 15;
 		private int mineCount = 1;
@@ -74,6 +76,8 @@ namespace MineCloner
             tableColumnCount = config.TableColumnCount;
 			tableRowCount = config.TableRowCount;
 			mineCount = config.MineCount;
+			playerWon = false;
+			isFirstClick = true;
 
 			//System.Diagnostics.Process.Start("Config.txt");
 			InitializeComponent();
@@ -285,7 +289,6 @@ namespace MineCloner
 			}
 			
 			int PosX = mineButton.x, PosY = mineButton.y;
-			int minesAroundCount = gameMap.MinesAroundPosition(PosX, PosY);
 
 			switch (args?.Button)
 			{
@@ -296,6 +299,18 @@ namespace MineCloner
 						// Can't click flagged buttons
 						return;
 					}
+
+					// Making it so your first click can't be a mine
+					if (isFirstClick)
+                    {
+						isFirstClick = false;
+						while(gameMap[PosX, PosY])
+                        {
+							gameMap.ReGenerateMines();
+                        }
+                    }
+
+					int minesAroundCount = gameMap.MinesAroundPosition(PosX, PosY);
 
 					if (gameMap[PosX, PosY] == true)
 					{
@@ -316,6 +331,7 @@ namespace MineCloner
 					else if (minesAroundCount == 0)
 					{
 						mineButton.Dispose();
+						spawnedMineButtons.Remove(mineButton);
 						// No mines around button, Going to click them automatically
 						List<MineButton> mineButtons = GetControlsAroundPoint<MineButton>(PosX, PosY); // Creating a list of buttons to click 
 
@@ -355,9 +371,13 @@ namespace MineCloner
 						restartButton.ForeColor = Color.DarkOrange;
 						restartButton.Text = "😎";
 
-						MessageBox.Show("A Winnar Is You!", "WIN!", MessageBoxButtons.OK);
+						if (!playerWon)
+						{
+							MessageBox.Show("A Winnar Is You!", "WIN!", MessageBoxButtons.OK);
 
-						System.Diagnostics.Debug.WriteLine("Player Won!");
+							System.Diagnostics.Debug.WriteLine("Player Won!");
+							playerWon = true;
+						}
 					}
 
 					break;
