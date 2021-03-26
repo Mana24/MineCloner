@@ -27,7 +27,7 @@ namespace MineCloner
 		private bool isFirstClick = true;
 		private int tableColumnCount = 15;
 		private int tableRowCount = 15;
-		private int mineCount = 1;
+		private int mineCount = 10;
 		public static int flagCount; // Making this static is a bad hack to make this availabe to other classes (mainly MineButton)
 		private TableLayoutPanel gameTable;
 		private MineMap gameMap;
