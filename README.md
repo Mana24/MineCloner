@@ -1,11 +1,5 @@
-# Console-Snake
-Snake but it's entirely in the console. 
+# Mine Cloner
 
-# Controls
-* [Z] Double framerate to go zoom zoom
-* [ESC] Exit game
-* [R] Restart
-* [Arrow Keys] Movement
+A bad Minesweeper clone made entirely in Windows Forms. This project features some of the worst code I've ever written or will ever write. It's astounding enough that it runs with how bad it looks on the inside. But hey, it DOES work.
 
-# Disclaimer
-Some of the code for console performance was taken from Quill18's Game on https://github.com/quill18/ld36 and then modified by me.
+
